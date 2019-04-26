@@ -52,29 +52,29 @@ public class FXNet extends Application {
         mysteryNum.setMaxSize(10,10);
 
         portLabel = new Text("Port Number: ");
-        portLabel.setFill(Color.PURPLE);
-        portLabel.setFont(new Font("Comic Sans MS Bold",20));
+        portLabel.setFill(Color.LIMEGREEN);
+        portLabel.setFont(new Font("Arial Rounded MT Bold",20));
         portNum = new TextArea();
         portNum.setPrefSize(120,20);
 
         guessesLabel = new Text("Guesses: ");
-        guessesLabel.setFill(Color.PURPLE);
-        guessesLabel.setFont(new Font("Comic Sans MS Bold",36));
+        guessesLabel.setFill(Color.RED);
+        guessesLabel.setFont(new Font("Arial Rounded MT Bold",36));
         guesses.setPrefSize(150,150);
 
         clientNamesLabel = new Text("Players: ");
-        clientNamesLabel.setFill(Color.PURPLE);
-        clientNamesLabel.setFont(new Font("Comic Sans MS Bold",36));
+        clientNamesLabel.setFill(Color.BLUE);
+        clientNamesLabel.setFont(new Font("Arial Rounded MT Bold",36));
         clientNames = new TextArea();
         clientNames.setPrefSize(150,150);
 
         winnerLabel = new Text("Winner: ");
-        winnerLabel.setFill(Color.DARKGREEN);
-        winnerLabel.setFont(new Font("Comic Sans MS Bold",36));
+        winnerLabel.setFill(Color.YELLOW);
+        winnerLabel.setFont(new Font("Arial Rounded MT Bold",36));
         winner = new TextArea();
         winner.setPrefSize(150,20);
 
-
+        System.out.println(Font.getFontNames());
 
         BackgroundImage myBI= new BackgroundImage(new Image("bgg.png",800,700,false,true),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
