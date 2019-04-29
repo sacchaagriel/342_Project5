@@ -18,20 +18,14 @@ import static java.awt.Color.white;
 import static javafx.scene.text.FontWeight.BOLD;
 
 
-public class Client5 extends Application{
-
+public class Client5 extends Application {
 
     Stage myStage;
     Scene scene1, scene2;
-
     BorderPane pane;
-
     TextField port, IP, playerGuess, playersOnline;
-
     TextArea numbersGuessed;
-
-    Button instr, submit, quit,  playAgain;
-
+    Button instr, submit, quit, playAgain;
     Text welcome, winner, guess, numsGuessed, mysteryNum;
 
     public static void main(String[] args) {
@@ -44,6 +38,7 @@ public class Client5 extends Application{
         primaryStage.setTitle("Client GUI");
 
         myStage = primaryStage;
+        myStage.setResizable(false);
 
         // Set up the welcome text
         welcome = new Text("Welcome to Mystery Number!");
@@ -56,8 +51,6 @@ public class Client5 extends Application{
 
         Font playFont = new Font("Verdana",18);
         playerNum.setFont(playFont);
-
-
 
         // Set up the pane
         pane = new BorderPane();
@@ -73,18 +66,15 @@ public class Client5 extends Application{
         numbersGuessed = new TextArea();
         numbersGuessed.setTranslateY(20);
         numbersGuessed.setTranslateX(50);
-
-
         numbersGuessed.setPrefHeight(200);
         numbersGuessed.setMaxWidth(200);
-
 
         winner = new Text("No Winners Yet...");
         winner.setStyle("-fx-font-weight: bold");
         //winner.setTranslateY(20);
 
         // Code for setting a Background Image
-        BackgroundImage myBI= new BackgroundImage(new Image("math4.jpg",700,700,false,true),
+        BackgroundImage myBI= new BackgroundImage(new Image("math4.jpg",720,720,false,true),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
         pane.setBackground(new Background(myBI));
@@ -115,7 +105,6 @@ public class Client5 extends Application{
         back.setTranslateX(300);
         back.setOnAction(e -> myStage.setScene(scene1));
 
-
         VBox Instructions = new VBox(10,instrTop,gameInstructions,back);
 
         pane2.setBackground(new Background(myBI));
@@ -139,9 +128,6 @@ public class Client5 extends Application{
         mysteryNum.setTranslateX(50);
         displayNum.setTranslateY(30);
         displayNum.setTranslateX(50);
-
-
-
 
         Text portEnter = new Text("Enter Port or use Default:");
         portEnter.setStyle("-fx-font-weight: bold");
@@ -168,8 +154,6 @@ public class Client5 extends Application{
         playAgain.setTextFill(Color.WHITE);
         playAgain.setStyle("-fx-background-color: #000000");
 
-
-
         Text onlinePlayers = new Text("Players currently online:");
         onlinePlayers.setStyle("-fx-font-weight: bold");
         TextArea playersConnected = new TextArea();
@@ -180,10 +164,9 @@ public class Client5 extends Application{
         connect.setTextFill(Color.WHITE);
         connect.setStyle("-fx-background-color: #000000");
         VBox options = new VBox(10,ipEnter,IP,portEnter,port,connect,getInstr,instr,
-                onlinePlayers,playersConnected,winner,quit, playAgain);
+                onlinePlayers,playersConnected,winner,playAgain,quit);
 
         pane.setRight(options);
-
 
         // User Interface/Interaction at the bottom of the page
         guess = new Text("Your Guess: ");
@@ -193,13 +176,12 @@ public class Client5 extends Application{
         submit.setTextFill(Color.WHITE);
         submit.setStyle("-fx-background-color: #000000");
 
-        HBox userStuff = new HBox(10,guess,playerGuess,submit);
+        HBox userStuff = new HBox(7,guess,playerGuess,submit);
 
         pane.setBottom(userStuff);
 
         VBox paneCenter = new VBox(10,numsGuessed,numbersGuessed,mysteryNum,displayNum);
         pane.setCenter(paneCenter);
-
 
         primaryStage.setScene(scene1);
         primaryStage.show();
