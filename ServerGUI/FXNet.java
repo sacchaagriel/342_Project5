@@ -18,20 +18,10 @@ import javafx.scene.effect.Bloom;
 
 public class FXNet extends Application {
 
-    private boolean isServer = true;
-
     private NetworkConnection conn = createServer();
-    private TextArea guesses = new TextArea();
-    private Text guessesLabel, welcomeText;
-    private Text mysteryNumLabel;//label
-    private TextArea mysteryNum; //the actual number for mystery number
-    private Text clientNamesLabel;
-    private TextArea clientNames;
-    private Text winnerLabel;
-    private TextArea winner;
-    private Text portLabel;
-    private TextArea portNum;
-
+    private TextArea guesses, mysteryNum, clientNames, winner, portNum;
+    private Text guessesLabel, welcomeText, mysteryNumLabel, 
+    			 clientNamesLabel,winnerLabel, portLabel;
 
     private Parent createContent() {
 
@@ -49,6 +39,7 @@ public class FXNet extends Application {
         bloom.setThreshold(.1);
         mysteryNumLabel.setEffect(bloom);
         mysteryNum = new TextArea();
+        mysteryNum.setEditable(false);
         mysteryNum.setMaxSize(10,10);
 
         portLabel = new Text("Port Number: ");
@@ -60,18 +51,22 @@ public class FXNet extends Application {
         guessesLabel = new Text("Guesses: ");
         guessesLabel.setFill(Color.RED);
         guessesLabel.setFont(new Font("Arial Rounded MT Bold",36));
+        guesses = new TextArea();
+        guesses.setEditable(false);
         guesses.setPrefSize(150,150);
 
         clientNamesLabel = new Text("Players: ");
         clientNamesLabel.setFill(Color.BLUE);
         clientNamesLabel.setFont(new Font("Arial Rounded MT Bold",36));
         clientNames = new TextArea();
+        clientNames.setEditable(false);
         clientNames.setPrefSize(150,150);
 
         winnerLabel = new Text("Winner: ");
         winnerLabel.setFill(Color.YELLOW);
         winnerLabel.setFont(new Font("Arial Rounded MT Bold",36));
         winner = new TextArea();
+        winner.setEditable(false);
         winner.setPrefSize(150,20);
 
         System.out.println(Font.getFontNames());
@@ -81,7 +76,6 @@ public class FXNet extends Application {
                 BackgroundSize.DEFAULT);
 
         BorderPane root = new BorderPane();
-
 
         //welcome box and port
         HBox port = new HBox(10,portLabel, portNum);
@@ -98,6 +92,7 @@ public class FXNet extends Application {
         VBox bot = new VBox(100,center, bottom);
 
         BorderPane pane = new BorderPane();
+        
         pane.setCenter(bot);
         root.setTop(top);
         root.setBottom(pane);
@@ -105,37 +100,30 @@ public class FXNet extends Application {
         root.setRight(right);
         root.setLeft(left);
 
-
         root.setBackground(new Background(myBI));
         root.setPadding(new Insets(0,50,10,50));
-        root.setPrefSize(800, 700);
-
+        root.setPrefSize(600, 685);
 
         return root;
-
-
-
     }
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // TODO Auto-generated method stub
         primaryStage.setScene(new Scene(createContent()));
+        primaryStage.setResizable(false);
         primaryStage.show();
-
     }
 
     @Override
-    public void init() throws Exception{
+    public void init() throws Exception {
         conn.startConn();
-        }
+    }
 
     @Override
-    public void stop() throws Exception{
+    public void stop() throws Exception {
         conn.closeConn();
     }
 
@@ -146,6 +134,4 @@ public class FXNet extends Application {
             });
         });
     }
-
-
 }

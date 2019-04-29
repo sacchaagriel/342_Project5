@@ -12,7 +12,6 @@ public abstract class NetworkConnection {
     public NetworkConnection(Consumer<Serializable> callback) {
         this.callback = callback;
         connthread.setDaemon(true); //not a user thread, a background thread
-
     }
 
     public void startConn() throws Exception{
@@ -27,7 +26,6 @@ public abstract class NetworkConnection {
         connthread.socket.close();
     }
 
-    abstract protected boolean isServer();
     abstract protected String getIP();
     abstract protected int getPort();
 
@@ -36,8 +34,8 @@ public abstract class NetworkConnection {
         private ObjectOutputStream out;
 
         public void run() {
-            try(ServerSocket server = isServer() ? new ServerSocket(getPort()) : null;
-                Socket socket = isServer() ? server.accept() : new Socket(getIP(), getPort());
+            try(ServerSocket server = new ServerSocket(getPort());
+                Socket socket = server.accept();
                 ObjectOutputStream out = new ObjectOutputStream( socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
 
@@ -56,6 +54,4 @@ public abstract class NetworkConnection {
             }
         }
     }
-
 }
-
