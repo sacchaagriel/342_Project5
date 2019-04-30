@@ -117,7 +117,15 @@ class NetworkConnection {
                     {
                         for(int i = 0; i < clientList.size(); i++)
                         {
-                            clientList.get(i).sendMsg("Play game");
+                            clientList.get(i).sendMsg("4 players are now connected!! \n Begin playing the game.");
+                        }
+                    }
+
+                    if(numClients < 4)
+                    {
+                        for(int i = 0; i < clientList.size(); i++)
+                        {
+                            clientList.get(i).sendMsg("Waiting for 4 players to connect...");
                         }
                     }
 
@@ -216,8 +224,9 @@ class NetworkConnection {
             }
         }
     }
-
 }
+
+
 
 
 
