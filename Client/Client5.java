@@ -60,7 +60,11 @@ public class Client5 extends Application{
         Font playFont = new Font("Verdana",18);
         playerNum.setFont(playFont);
 
-        playerName = new TextField("Name");
+        playerName = new TextField("Enter Name Here");
+        // Heemani: Adding proper placement for playerName Textfield
+        playerName.setMaxWidth(150);
+        playerName.setTranslateY(100);
+        playerName.setTranslateX(76);
         info = new Text();
 
         // Set up the pane
