@@ -9,10 +9,9 @@ Project 5. Simple 4 player game using Server and Clients.
 **Rules/Gameplay:** 
 
   The server waits for at least 4 players to connect before starting the game. A game cannot start with less than 4 players.
-  However, any player may leave at any time they wish once the game has started. In such a case, the remaining players will
-  continue to play.
+  However, any player may leave at any time they wish once the game has started. In such a case, the game will remain paused and the   remaining players will wait for a fourth player to join. Once a fourth player has joined, the game will resume until there's a winner.
   
-  Once there are 4 players connected, the server will choose a random number from 0-50.
+  Once there are 4 players connected, the server will choose a random number from 0-30.
   
   Once the 4th player joins, all players can begin guessing numbers. All players will see a list (updated 
   in real time) of all the numbers that have already been guessed by either him/herself or any other players in
