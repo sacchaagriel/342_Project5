@@ -33,7 +33,7 @@ public class Client5 extends Application{
 
     Button instr, submit, quit,  playAgain, connect;
 
-    Text welcome, winner, guess, numsGuessed, mysteryNum;
+    Text welcome, winner, guess, numsGuessed, mysteryNum, info;
 
     int portNumber;
     String hostName;
@@ -61,7 +61,7 @@ public class Client5 extends Application{
         playerNum.setFont(playFont);
 
         playerName = new TextField("Name");
-
+        info = new Text();
 
         // Set up the pane
         pane = new BorderPane();
@@ -201,7 +201,7 @@ public class Client5 extends Application{
 
         pane.setBottom(userStuff);
 
-        VBox paneCenter = new VBox(10,numsGuessed,numbersGuessed,mysteryNum,displayNum, playerName);
+        VBox paneCenter = new VBox(10,numsGuessed,numbersGuessed,mysteryNum,displayNum, playerName, info);
         pane.setCenter(paneCenter);
 
         playerGuess.setDisable(true);
@@ -219,17 +219,24 @@ public class Client5 extends Application{
                                 playerNum.setText(data.toString());
                             }
 
+                            if(data.toString().startsWith("Waiting"))
+                            {
+                                info.setText(data.toString());
+                            }
+
                             if (data.toString().startsWith("Players Online: \n")) {
                                 playersConnected.setText(data.toString());
                             }
 
-                            if (data.toString().equals("Play game")) {
+                            if (data.toString().equals("4 players are now connected!! \n Begin playing the game.")) {
+                                info.setText(data.toString());
                                 playerGuess.setDisable(false);
                                 submit.setDisable(false);
                             }
                             if (data.toString().startsWith("Numbers Guessed:")) {
                                 numbersGuessed.setText(data.toString());
                             }
+
 
                             if (data.toString().startsWith("Mystery Number:")) {
                                 mysteryNum.setText(data.toString());
