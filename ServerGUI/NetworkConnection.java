@@ -1,57 +1,224 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.function.Consumer;
 
-public abstract class NetworkConnection {
+class NetworkConnection {
+    public static int numClients;
+    private int port;
+    public ArrayList<ClientSocket> clientList = new ArrayList<>(); //Stores all clients
+    public ArrayList<String> clientChoices = new ArrayList<>();       //Holds all the client names that are connected to server.
+    public ArrayList<String> clientNames = new ArrayList<>();
+    private ConnThread connThread = new ConnThread();
+    public int mysteryNo;
+    public String mystery;
 
-    private ConnThread connthread = new ConnThread();   //new thread        //move this
-    private Consumer<Serializable> callback;    //turns things to bytes     //move this
+    //Function that allows us to pass in a function that is going to be called when
+    //we receive message from the other end.
+    private Consumer<Serializable> callback;
 
-    public NetworkConnection(Consumer<Serializable> callback) {
+    NetworkConnection(int port, Consumer<Serializable> callback) {
+        this.port = port;
         this.callback = callback;
-        connthread.setDaemon(true); //not a user thread, a background thread
+        numClients = 0;
+
+        //Generating Random no
+        Random rand = new Random();
+        mysteryNo = rand.nextInt(30);
+        mysteryNo += 1;
+        mystery = Integer.toString(mysteryNo);
+        System.out.println(mystery);
+
+        connThread.setDaemon(true);
     }
 
-    public void startConn() throws Exception{
-        connthread.start();
+    public int getPort() {
+        return this.port;
     }
 
-    public void send(Serializable data) throws Exception{
-        connthread.out.writeObject(data);
+
+    public void startConn() {
+        connThread.start();
     }
 
-    public void closeConn() throws Exception{
-        connthread.socket.close();
+    public void closeConn() {
+        try {
+            for (ClientSocket clients : clientList) {
+                clients.getClientSocket().close();
+            }
+        }
+        catch (IOException e)
+        {
+            System.out.println("Error in closing client sockets.");
+        }
     }
 
-    abstract protected String getIP();
-    abstract protected int getPort();
 
-    class ConnThread extends Thread{
-        private Socket socket;  //creates a socket
+    //Inner class which extends Thread.
+    class ConnThread extends Thread {
+
         private ObjectOutputStream out;
+        private Socket socket;
+        private ObjectInputStream in;
 
         public void run() {
-            try(ServerSocket server = new ServerSocket(getPort());
-                Socket socket = server.accept();
-                ObjectOutputStream out = new ObjectOutputStream( socket.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
 
-                this.socket = socket;
-                this.out = out;
-                socket.setTcpNoDelay(true);
+            try (
+                ServerSocket listener = new ServerSocket(getPort()))    //listener always keeps listening to see if client wants to connect.
 
-                while(true) {
-                    Serializable data = (Serializable) in.readObject();
-                    callback.accept(data);
+                {
+                    while (true) {
+                        Socket socket = listener.accept();
+                        this.socket = socket;
+
+                        ClientSocket secondaryThread = new ClientSocket(socket);
+                        clientList.add(secondaryThread);    //The client connected is added to the ArrayList clientList.
+                        secondaryThread.start();
+                        this.out = secondaryThread.getOut();
+                        this.in = secondaryThread.getIn();
+                    }
                 }
-
-            }
-            catch(Exception e) {
-                callback.accept("connection Closed");
+            catch (IOException e) {
+                callback.accept("Connection Closed");
             }
         }
     }
+
+
+    class ClientSocket extends Thread {
+        private Socket clientSocket;
+        private ObjectOutputStream out;
+        private ObjectInputStream in;
+        private Serializable data;
+        private String clientName;
+        private String winner;
+
+        ClientSocket( Socket clientSocket) {
+            this.clientSocket = clientSocket;
+            numClients++;
+        }
+
+        public synchronized void run() {
+            try (
+                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());    //send objects
+                //ObjectInputStream deserializes primitive data and objects previously written using an ObjectOutputStream.
+                ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream()))       //receive objects
+            {
+                this.in = in;
+                this.out = out;
+
+                //This is what we receive from the other end.
+                while (true) {
+                    data = (Serializable) in.readObject();  //Reads data sent from client.
+
+                    if(numClients >= 4)
+                    {
+                        for(int i = 0; i < clientList.size(); i++)
+                        {
+                            clientList.get(i).sendMsg("Play game");
+                        }
+                    }
+
+                    if(data.equals(mystery))
+                    {
+                        winner = "**" + this.getClientName() + " ***";
+                        System.out.println(this.getClientName());
+                        callback.accept(winner);
+                    }
+
+                    if(data.toString().startsWith("* "))
+                    {
+                        this.sendMsg("You are player: " + numClients);
+                        this.clientName = data.toString();
+                        clientNames.add(data.toString());
+                        callback.accept(clientNames);
+                    }
+
+                    else if(data.toString().equals("quit"))
+                    {
+                        clientNames.remove(this.clientName);
+                        clientList.remove(this);
+                        setData();
+                        callback.accept(clientNames);
+                        closeSocket();  //If client send "quit", that client socket is closed and removed from ArrayList.
+                    }
+                    else {
+                        clientChoices.add(data.toString());
+                        callback.accept(clientChoices);
+                    }
+                    callback.accept(data);
+                }
+            }
+
+            catch(ClassNotFoundException e)
+            {
+                System.out.println("Class not found exception.");
+            }
+            catch (IOException e) {
+                System.out.println("Connection closed");
+            }
+            catch (NullPointerException e)
+            {
+                System.out.println("Connection closed.");
+            }
+        }
+
+        public void closeSocket() {
+            try {
+                //Closes all streams, socket and removes the clientSocket from ArrayList.
+                this.out.close();
+                this.in.close();
+                this.getClientSocket().close();
+
+                numClients--;
+            }
+            catch (IOException e) {
+                System.out.println("In close socket");
+            }
+        }
+
+        public Socket getClientSocket() {
+            return clientSocket;
+        }
+
+        public void setData() {
+            this.data = null;
+        }
+
+        public Serializable getData()
+        {
+            return data;
+        }
+
+        public ObjectOutputStream getOut()
+        {
+            return this.out;
+        }
+
+        public ObjectInputStream getIn()
+        {
+            return this.in;
+        }
+
+        public String getClientName()
+        {
+            return this.clientName;
+        }
+
+        public void sendMsg(Serializable msg) {
+            try {
+                out.writeObject(msg);   //Sends msg to client through "out" stream.
+            }
+            catch (IOException e) {
+                System.out.println("Error in sending Server's message.");
+            }
+        }
+    }
+
 }
+
+
+
+
