@@ -57,9 +57,9 @@ public class NetworkConnection {
 
         public synchronized void run() {
             try(
-                    Socket socket = new Socket(getIP(), getPort());
-                    ObjectOutputStream out = new ObjectOutputStream( socket.getOutputStream());
-                    ObjectInputStream in = new ObjectInputStream( socket.getInputStream())) {
+                Socket socket = new Socket(getIP(), getPort());
+                ObjectOutputStream out = new ObjectOutputStream( socket.getOutputStream());
+                ObjectInputStream in = new ObjectInputStream( socket.getInputStream())) {
 
                 this.socket = socket;
                 this.out = out;
@@ -74,8 +74,6 @@ public class NetworkConnection {
             catch(Exception e) {
                 callback.accept("connection Closed");
             }
-
-
         }
     }
 }
