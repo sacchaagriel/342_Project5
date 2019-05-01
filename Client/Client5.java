@@ -26,14 +26,10 @@ public class Client5 extends Application{
     Scene scene1, scene2;
 
     BorderPane pane;
-
-    TextField port, IP, playerGuess, playersOnline, playerName;
-
-    TextArea numbersGuessed;
-
-    Button instr, submit, quit,  playAgain, connect;
-
-    Text welcome, winner, guess, numsGuessed, mysteryNum, info;
+    TextField port, IP, playerGuess, playerName;
+    TextArea numbersGuessed, playersConnected;
+    Button instr, submit, quit,  playAgain, connect, join;
+    Text welcome, winner, guess, numsGuessed, mysteryNum, info, enterName;
 
     int portNumber;
     String hostName;
@@ -47,6 +43,7 @@ public class Client5 extends Application{
         primaryStage.setTitle("Client GUI");
 
         myStage = primaryStage;
+        primaryStage.setResizable(false);
 
         // Set up the welcome text
         welcome = new Text("Welcome to Mystery Number!");
@@ -60,11 +57,15 @@ public class Client5 extends Application{
         Font playFont = new Font("Verdana",18);
         playerNum.setFont(playFont);
 
-        playerName = new TextField("Enter Name Here");
+        enterName = new Text("Enter Name:");
+        enterName.setStyle("-fx-font-weight: bold");
+        
+        playerName = new TextField("Math Wiz");
+        playerName.setDisable(true);
         // Heemani: Adding proper placement for playerName Textfield
-        playerName.setMaxWidth(150);
-        playerName.setTranslateY(100);
-        playerName.setTranslateX(76);
+        //playerName.setMaxWidth(150);
+        //playerName.setTranslateY(100);
+        //playerName.setTranslateX(76);
         info = new Text();
 
         // Set up the pane
@@ -83,11 +84,9 @@ public class Client5 extends Application{
         numbersGuessed.setTranslateX(50);
         // Heemani: added wrapText feature
         numbersGuessed.setWrapText(true);
-
-
         numbersGuessed.setPrefHeight(200);
         numbersGuessed.setMaxWidth(200);
-
+        numbersGuessed.setEditable(false);
 
         winner = new Text("No Winners Yet...");
         winner.setStyle("-fx-font-weight: bold");
@@ -135,23 +134,20 @@ public class Client5 extends Application{
 
         //************ End Code for Instructions scene ***********
 
-        VBox welcomeBanner = new VBox(5, welcome,playerNum);
+        VBox welcomeBanner = new VBox(5, welcome, playerNum);
 
         pane.setTop(welcomeBanner);
 
         mysteryNum = new Text("Mystery Num: ???");
         mysteryNum.setFont(playFont);
 
-        Text displayNum = new Text("???"); // Set this to actual number at the end
+        Text displayNum = new Text("           ???"); // Set this to actual number at the end
         displayNum.setFont(playFont);
 
         mysteryNum.setTranslateY(30);
         mysteryNum.setTranslateX(50);
         displayNum.setTranslateY(30);
         displayNum.setTranslateX(50);
-
-
-
 
         Text portEnter = new Text("Enter Port or use Default:");
         portEnter.setStyle("-fx-font-weight: bold");
@@ -177,23 +173,26 @@ public class Client5 extends Application{
         playAgain = new Button("PLAY AGAIN");
         playAgain.setTextFill(Color.WHITE);
         playAgain.setStyle("-fx-background-color: #000000");
-
-
+        
+        join = new Button("JOIN");
+        join.setTextFill(Color.WHITE);
+        join.setStyle("-fx-background-color: #000000");
+        join.setDisable(true);
 
         Text onlinePlayers = new Text("Players currently online:");
         onlinePlayers.setStyle("-fx-font-weight: bold");
-        TextArea playersConnected = new TextArea();
-        playersConnected.setMaxWidth(150);
-        //playersConnected.setTranslateY(20);
+        playersConnected = new TextArea();
+        playersConnected.setMaxWidth(200);;
+        playersConnected.setMinHeight(65);;
+        playersConnected.setEditable(false);
 
         connect = new Button("CONNECT");
         connect.setTextFill(Color.WHITE);
         connect.setStyle("-fx-background-color: #000000");
         VBox options = new VBox(10,ipEnter,IP,portEnter,port,connect,getInstr,instr,
-                onlinePlayers,playersConnected,winner,quit, playAgain);
+                onlinePlayers,playersConnected,winner);
 
         pane.setRight(options);
-
 
         // User Interface/Interaction at the bottom of the page
         guess = new Text("Your Guess: ");
@@ -202,18 +201,26 @@ public class Client5 extends Application{
         submit = new Button("SUBMIT");
         submit.setTextFill(Color.WHITE);
         submit.setStyle("-fx-background-color: #000000");
+        
+        HBox userName = new HBox(10,enterName,playerName,join, quit);
+        HBox userStuff = new HBox(10,guess,playerGuess,submit, playAgain);
+        VBox bottomStuff = new VBox(10,info,userName,userStuff);
 
-        HBox userStuff = new HBox(10,guess,playerGuess,submit);
+        pane.setBottom(bottomStuff);
 
-        pane.setBottom(userStuff);
-
-        VBox paneCenter = new VBox(10,numsGuessed,numbersGuessed,mysteryNum,displayNum, playerName, info);
+        VBox paneCenter = new VBox(10,numsGuessed,numbersGuessed,mysteryNum,displayNum);
         pane.setCenter(paneCenter);
 
         playerGuess.setDisable(true);
         submit.setDisable(true);
 
         connect.setOnAction(event-> {
+        	connect.setDisable(true);
+        	port.setDisable(true);
+        	IP.setDisable(true);
+        	playerName.setDisable(false);
+        	join.setDisable(false);
+        	
             try{
                 portNumber = Integer.parseInt(port.getText());
                 hostName = IP.getText();
@@ -243,7 +250,6 @@ public class Client5 extends Application{
                                 numbersGuessed.setText(data.toString());
                             }
 
-
                             if (data.toString().startsWith("Mystery Number:")) {
                                 mysteryNum.setText(data.toString());
                                 mysteryNum.setFont(playFont);
@@ -267,9 +273,10 @@ public class Client5 extends Application{
             connection.send(playerGuess.getText());
         });
 
-        playerName.setOnAction(event -> {
-            connection.send("* " + playerName.getText());
-        });
+        join.setOnAction(event -> {
+        	connection.send("* " + playerName.getText());
+        });        
+        
         quit.setOnAction(event-> {
             connection.send("quit");
             connection.closeConn();         //Closes connection and ends client GUI.
