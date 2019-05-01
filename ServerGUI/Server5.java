@@ -53,33 +53,37 @@ public class Server5 extends Application {
         bloom.setThreshold(.1);
         mysteryNumLabel.setEffect(bloom);
         mysteryNum = new TextArea();
+        mysteryNum.setEditable(false);
         mysteryNum.setMaxSize(10,10);
 
         portLabel = new Text("Port Number: ");
         portLabel.setFill(Color.LIMEGREEN);
         portLabel.setFont(new Font("Arial Rounded MT Bold",20));
         //portNumber = new TextArea();
-        portNumber = new TextField();
+        portNumber = new TextField("5555");
         portNumber.setPrefSize(120,20);
 
         guessesLabel = new Text("Guesses: ");
         guessesLabel.setFill(Color.RED);
         guessesLabel.setFont(new Font("Arial Rounded MT Bold",36));
-        guesses.setPrefSize(150,150);
+        guesses.setPrefSize(200,300);
         // Heemani: Changed it so text wraps around
         guesses.setWrapText(true);
+        guesses.setEditable(false);
 
         clientNamesLabel = new Text("Players: ");
         clientNamesLabel.setFill(Color.BLUE);
         clientNamesLabel.setFont(new Font("Arial Rounded MT Bold",36));
         playerNames = new TextArea("No players connected!!");
-        playerNames.setPrefSize(150,150);
+        playerNames.setPrefSize(150,250);
+        playerNames.setEditable(false);
 
         winnerLabel = new Text("Winner: ");
         winnerLabel.setFill(Color.YELLOW);
         winnerLabel.setFont(new Font("Arial Rounded MT Bold",36));
         winner = new TextArea();
         winner.setPrefSize(150,20);
+        winner.setEditable(false);
 
         System.out.println(Font.getFontNames());
 
@@ -89,18 +93,18 @@ public class Server5 extends Application {
 
         BorderPane root = new BorderPane();
 
-
         //welcome box and port
      //   HBox port = new HBox(10, portNumber, ServerOn);
         HBox port = new HBox(10,portLabel, portNumber, ServerOn);
-        VBox top = new VBox(30,welcomeText, port);
+        VBox left = new VBox(20, clientNamesLabel, playerNames);
+        VBox top = new VBox(30,welcomeText, port, left);
 
         VBox right = new VBox(20, guessesLabel,guesses);
 
         VBox center = new VBox(10, mysteryNumLabel,mysteryNum);
         center.setAlignment(Pos.BOTTOM_CENTER);
 
-        VBox left = new VBox(20, clientNamesLabel, playerNames);
+        
         HBox bottom = new HBox(10, winnerLabel,winner);
 
         VBox bot = new VBox(100,center, bottom);
@@ -119,7 +123,6 @@ public class Server5 extends Application {
         root.setPrefSize(800, 700);
      //   root.setCenter(port);
         ServerOn.setOnAction(event-> {
-            //  ServerOn.setDisable(true);
             portNum = Integer.parseInt(portNumber.getText());
             portNumber.clear();
 
@@ -193,7 +196,8 @@ public class Server5 extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("SERVER");
-        primaryStage.setScene(new Scene(createContent(), 660, 500));
+        primaryStage.setScene(new Scene(createContent(), 760, 500));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
