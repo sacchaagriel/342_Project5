@@ -66,6 +66,8 @@ public class Server5 extends Application {
         guessesLabel.setFill(Color.RED);
         guessesLabel.setFont(new Font("Arial Rounded MT Bold",36));
         guesses.setPrefSize(150,150);
+        // Heemani: Changed it so text wraps around
+        guesses.setWrapText(true);
 
         clientNamesLabel = new Text("Players: ");
         clientNamesLabel.setFill(Color.BLUE);
