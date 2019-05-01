@@ -81,6 +81,8 @@ public class Client5 extends Application{
         numbersGuessed = new TextArea();
         numbersGuessed.setTranslateY(20);
         numbersGuessed.setTranslateX(50);
+        // Heemani: added wrapText feature
+        numbersGuessed.setWrapText(true);
 
 
         numbersGuessed.setPrefHeight(200);
