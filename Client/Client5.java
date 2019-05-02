@@ -287,6 +287,7 @@ public class Client5 extends Application{
 
         submit.setOnAction(event-> {
             connection.send(playerGuess.getText());
+            playerGuess.clear();
         });
 
         join.setOnAction(event -> {
@@ -310,6 +311,12 @@ public class Client5 extends Application{
             connection.closeConn();         //Closes connection and ends client GUI.
             System.exit(0);
         });
+        
+        playAgain.setOnAction(event -> {
+        	connection.send("play again");
+        	numbersGuessed.clear();
+        	playersConnected.clear();
+        }); 
 
         primaryStage.setScene(scene1);
         primaryStage.show();
