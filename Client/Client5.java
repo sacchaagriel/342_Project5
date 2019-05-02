@@ -14,6 +14,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import java.io.InputStream;
+import javafx.scene.image.ImageView;
+
 
 import java.awt.*;
 import java.io.File;
@@ -32,7 +37,7 @@ public class Client5 extends Application{
     BorderPane pane;
     TextField port, IP, playerGuess, playerName;
     TextArea numbersGuessed, playersConnected;
-    Button instr, submit, quit, playAgain, connect, join, mute, unmute;
+    Button instr, submit, quit, playAgain, connect, join, mute,unmute, muteUnmute;
     Text welcome, winner, guess, numsGuessed, mysteryNum, info, enterName;
 
     int portNumber;
@@ -45,13 +50,14 @@ public class Client5 extends Application{
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Client GUI");
+        muteUnmute = new Button();
         
         String path = new File("src/music5.mp3").getAbsolutePath();
         Media musicFile = new Media(new File(path).toURI().toString());
         mediaPlayer = new MediaPlayer(musicFile);
         mediaPlayer.setAutoPlay(false);
         mediaPlayer.setVolume(0.1);
-
+        mediaPlayer.setMute(true);
         myStage = primaryStage;
         primaryStage.setResizable(false);
 
@@ -143,8 +149,34 @@ public class Client5 extends Application{
         scene2 = new Scene(pane2,700,700);
 
         //************ End Code for Instructions scene ***********
-
-        VBox welcomeBanner = new VBox(5, welcome, playerNum);
+ //saccha: added mute and unmute button to welcome Hbox
+        Image muteP = new Image("mutepic.png");
+        ImageView mutePic = new ImageView(muteP);
+        mutePic.setFitHeight(30);
+        mutePic.setFitWidth(30);
+        mutePic.setPreserveRatio(true);
+        Image unmuteP = new Image("unmutepic.png");
+        ImageView unmutePic = new ImageView(unmuteP);
+        unmutePic.setFitHeight(30);
+        unmutePic.setFitWidth(30);
+        unmutePic.setPreserveRatio(true);
+        muteUnmute.setStyle("-fx-background-color: #000000");
+        muteUnmute.setMaxSize(30,30);
+        muteUnmute.setGraphic(mutePic);
+        muteUnmute.setOnAction(event -> {
+            if(mediaPlayer.isMute()){//not playing
+                mediaPlayer.play();
+                mediaPlayer.setMute(false);
+                muteUnmute.setGraphic(unmutePic);
+            }
+            else{
+                mediaPlayer.setMute(true);
+                muteUnmute.setGraphic(mutePic);
+            }
+        });
+        HBox welcomeB = new HBox(30, welcome, muteUnmute);
+        VBox welcomeBanner = new VBox(5, welcomeB, playerNum);
+      //  VBox welcomeBanner = new VBox(5, welcome, playerNum);
 
         pane.setTop(welcomeBanner);
 
@@ -221,7 +253,7 @@ public class Client5 extends Application{
         submit.setTextFill(Color.WHITE);
         submit.setStyle("-fx-background-color: #000000");
         
-        HBox userName = new HBox(10,enterName,playerName,join,mute,unmute,quit);
+        HBox userName = new HBox(10,enterName,playerName,join,quit);
         HBox userStuff = new HBox(10,guess,playerGuess,submit, playAgain);
         VBox bottomStuff = new VBox(10,info,userName,userStuff);
 
@@ -288,6 +320,13 @@ public class Client5 extends Application{
         submit.setOnAction(event-> {
             connection.send(playerGuess.getText());
             playerGuess.clear();
+             try {
+                InputStream inputStream = getClass().getResourceAsStream("Ding.wav");
+                AudioStream audioStream = new AudioStream(inputStream);
+                AudioPlayer.player.start(audioStream);
+            } catch (Exception e) {
+                // handle exception
+            }
         });
 
         join.setOnAction(event -> {
