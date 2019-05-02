@@ -37,7 +37,14 @@ public class Server5 extends Application {
     Boolean isWinner = false;
 
     private Parent createContent() {
-
+        try {
+                InputStream inputStream = getClass().getResourceAsStream("CS.wav");
+                AudioStream audioStream = new AudioStream(inputStream);
+                AudioPlayer.player.start(audioStream);
+            } catch (Exception e) {
+                // handle exception
+        }
+        
         ServerOn = new Button("Server On");
         Reflection reflection = new Reflection();
         reflection.setFraction(0.7);
