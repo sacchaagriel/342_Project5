@@ -4,6 +4,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -14,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
 import java.awt.*;
+import java.io.File;
 
 import static java.awt.Color.white;
 import static javafx.scene.text.FontWeight.BOLD;
@@ -22,13 +25,14 @@ import static javafx.scene.text.FontWeight.BOLD;
 public class Client5 extends Application{
 
     NetworkConnection connection;
+    MediaPlayer mediaPlayer;
     Stage myStage;
     Scene scene1, scene2;
 
     BorderPane pane;
     TextField port, IP, playerGuess, playerName;
     TextArea numbersGuessed, playersConnected;
-    Button instr, submit, quit,  playAgain, connect, join;
+    Button instr, submit, quit, playAgain, connect, join, mute, unmute;
     Text welcome, winner, guess, numsGuessed, mysteryNum, info, enterName;
 
     int portNumber;
@@ -41,6 +45,12 @@ public class Client5 extends Application{
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Client GUI");
+        
+        String path = new File("src/music5.mp3").getAbsolutePath();
+        Media musicFile = new Media(new File(path).toURI().toString());
+        mediaPlayer = new MediaPlayer(musicFile);
+        mediaPlayer.setAutoPlay(false);
+        mediaPlayer.setVolume(0.1);
 
         myStage = primaryStage;
         primaryStage.setResizable(false);
@@ -70,9 +80,9 @@ public class Client5 extends Application{
 
         // Set up the pane
         pane = new BorderPane();
-        pane.setPadding(new Insets(70));
+        pane.setPadding(new Insets(60));
 
-        scene1 = new Scene(pane, 700,700);
+        scene1 = new Scene(pane, 688,688);
 
         // Set up the central VBox
         numsGuessed = new Text("The numbers guessed so far:");
@@ -169,6 +179,15 @@ public class Client5 extends Application{
         quit = new Button("QUIT");
         quit.setTextFill(Color.WHITE);
         quit.setStyle("-fx-background-color: #000000");
+        
+        mute = new Button("MUTE");
+        mute.setTextFill(Color.WHITE);
+        mute.setStyle("-fx-background-color: #000000");
+        mute.setDisable(true);
+        
+        unmute = new Button("UNMUTE");
+        unmute.setTextFill(Color.WHITE);
+        unmute.setStyle("-fx-background-color: #000000");
 
         playAgain = new Button("PLAY AGAIN");
         playAgain.setTextFill(Color.WHITE);
@@ -202,7 +221,7 @@ public class Client5 extends Application{
         submit.setTextFill(Color.WHITE);
         submit.setStyle("-fx-background-color: #000000");
         
-        HBox userName = new HBox(10,enterName,playerName,join, quit);
+        HBox userName = new HBox(10,enterName,playerName,join,mute,unmute,quit);
         HBox userStuff = new HBox(10,guess,playerGuess,submit, playAgain);
         VBox bottomStuff = new VBox(10,info,userName,userStuff);
 
@@ -215,9 +234,6 @@ public class Client5 extends Application{
         submit.setDisable(true);
 
         connect.setOnAction(event-> {
-        	connect.setDisable(true);
-        	port.setDisable(true);
-        	IP.setDisable(true);
         	playerName.setDisable(false);
         	join.setDisable(false);
         	
@@ -275,7 +291,19 @@ public class Client5 extends Application{
 
         join.setOnAction(event -> {
         	connection.send("* " + playerName.getText());
-        });        
+        });
+        
+        mute.setOnAction(event -> {
+        	mediaPlayer.pause();
+        	mute.setDisable(true);
+        	unmute.setDisable(false);
+        }); 
+        
+        unmute.setOnAction(event -> {
+        	mediaPlayer.play();
+        	mute.setDisable(false);
+        	unmute.setDisable(true);
+        }); 
         
         quit.setOnAction(event-> {
             connection.send("quit");
