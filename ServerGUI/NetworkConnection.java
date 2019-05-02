@@ -66,20 +66,20 @@ class NetworkConnection {
         public void run() {
 
             try (
-                ServerSocket listener = new ServerSocket(getPort()))    //listener always keeps listening to see if client wants to connect.
+                    ServerSocket listener = new ServerSocket(getPort()))    //listener always keeps listening to see if client wants to connect.
 
-                {
-                    while (true) {
-                        Socket socket = listener.accept();
-                        this.socket = socket;
+            {
+                while (true) {
+                    Socket socket = listener.accept();
+                    this.socket = socket;
 
-                        ClientSocket secondaryThread = new ClientSocket(socket);
-                        clientList.add(secondaryThread);    //The client connected is added to the ArrayList clientList.
-                        secondaryThread.start();
-                        this.out = secondaryThread.getOut();
-                        this.in = secondaryThread.getIn();
-                    }
+                    ClientSocket secondaryThread = new ClientSocket(socket);
+                    clientList.add(secondaryThread);    //The client connected is added to the ArrayList clientList.
+                    secondaryThread.start();
+                    this.out = secondaryThread.getOut();
+                    this.in = secondaryThread.getIn();
                 }
+            }
             catch (IOException e) {
                 callback.accept("Connection Closed");
             }
@@ -94,6 +94,7 @@ class NetworkConnection {
         private Serializable data;
         private String clientName;
         private String winner;
+        private Boolean nameIsUnique = false;
 
         ClientSocket( Socket clientSocket) {
             this.clientSocket = clientSocket;
@@ -102,9 +103,9 @@ class NetworkConnection {
 
         public synchronized void run() {
             try (
-                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());    //send objects
-                //ObjectInputStream deserializes primitive data and objects previously written using an ObjectOutputStream.
-                ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream()))       //receive objects
+                    ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());    //send objects
+                    //ObjectInputStream deserializes primitive data and objects previously written using an ObjectOutputStream.
+                    ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream()))       //receive objects
             {
                 this.in = in;
                 this.out = out;
@@ -138,6 +139,24 @@ class NetworkConnection {
 
                     if(data.toString().startsWith("* "))
                     {
+                        do{
+                            if(clientNames.size() == 0) {
+                                nameIsUnique = true;
+                            }
+                            // Keep making the client enter name until its unique
+                            outer:
+                            for (int i = 0; i < clientNames.size(); i++) {
+                                System.out.println("The value of i" + i);
+                                if (clientNames.get(i).equals(data.toString())) {
+                                    data = (Serializable) in.readObject();
+                                    i=-1;
+                                    continue outer;
+                                }
+                                nameIsUnique = true;
+                                System.out.println("!1");
+                            }
+                        }while(!nameIsUnique);
+
                         this.sendMsg("You are player: " + numClients);
                         this.clientName = data.toString();
                         clientNames.add(data.toString());
