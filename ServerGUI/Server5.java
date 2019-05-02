@@ -18,6 +18,14 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.effect.Bloom;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import java.io.InputStream;
+import javafx.scene.image.ImageView;
+import javafx.animation.Animation;
 
 
 public class Server5 extends Application {
@@ -38,15 +46,42 @@ public class Server5 extends Application {
     String pChoices;
     String players;
     Boolean isWinner = false;
+    Button muteUnmute;
+    MediaPlayer mediaPlayer;
 
     private Parent createContent() {
-        try {
-                InputStream inputStream = getClass().getResourceAsStream("CS.wav");
-                AudioStream audioStream = new AudioStream(inputStream);
-                AudioPlayer.player.start(audioStream);
-            } catch (Exception e) {
-                // handle exception
-        }
+        //music button code
+         muteUnmute = new Button();
+        String path = new File("src/CSm.mp3").getAbsolutePath();
+        Media musicFile = new Media(new File(path).toURI().toString());
+        mediaPlayer = new MediaPlayer(musicFile);
+        mediaPlayer.setMute(true);
+        mediaPlayer.setVolume(0.1);
+        Image muteP = new Image("mutepic.png");
+        ImageView mutePic = new ImageView(muteP);
+        mutePic.setFitHeight(30);
+        mutePic.setFitWidth(30);
+        mutePic.setPreserveRatio(true);
+        Image unmuteP = new Image("unmutepic.png");
+        ImageView unmutePic = new ImageView(unmuteP);
+        unmutePic.setFitHeight(30);
+        unmutePic.setFitWidth(30);
+        unmutePic.setPreserveRatio(true);
+        muteUnmute.setStyle("-fx-background-color: #000000");
+        muteUnmute.setMaxSize(30,30);
+        muteUnmute.setGraphic(mutePic);
+        muteUnmute.setOnAction(event -> {
+            if(mediaPlayer.isMute()){//not playing
+                mediaPlayer.play();
+                mediaPlayer.setMute(false);
+                muteUnmute.setGraphic(unmutePic);
+            }
+            else{
+                mediaPlayer.setMute(true);
+                muteUnmute.setGraphic(mutePic);
+            }
+        });
+        //end music button code
         
         ServerOn = new Button("Server On");
         Reflection reflection = new Reflection();
@@ -54,7 +89,7 @@ public class Server5 extends Application {
         welcomeText = new Text("WELCOME TO MyStErY NUMBER!");
         welcomeText.setEffect(reflection);
         welcomeText.setFill(Color.GHOSTWHITE);
-        welcomeText.setFont(new Font("Comic Sans MS Bold",40));
+        welcomeText.setFont(new Font("Comic Sans MS Bold",35));
 
         mysteryNumLabel = new Text("Mystery Number: ");
         mysteryNumLabel.setFill(Color.GHOSTWHITE);
@@ -105,9 +140,10 @@ public class Server5 extends Application {
 
         //welcome box and port
      //   HBox port = new HBox(10, portNumber, ServerOn);
+         HBox wel = new HBox(10, welcomeText, muteUnmute);
         HBox port = new HBox(10,portLabel, portNumber, ServerOn);
         VBox left = new VBox(20, clientNamesLabel, playerNames);
-        VBox top = new VBox(30,welcomeText, port, left);
+        VBox top = new VBox(30,wel, port, left);
 
         VBox right = new VBox(20, guessesLabel,guesses);
 
